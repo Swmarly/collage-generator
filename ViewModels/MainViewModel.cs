@@ -136,7 +136,7 @@ public partial class MainViewModel : ObservableObject
         Status = SelectedImages.Count == 0 ? "No images selected." : $"{SelectedImages.Count} images selected. Empty space estimate: {CurrentLayout.EmptyAreaRatio:P1}.";
     }
 
-    public Microsoft.UI.Color GetBackgroundColor() => BackgroundColorName switch
+    public Windows.UI.Color GetBackgroundColor() => BackgroundColorName switch
     {
         "Black" => Colors.Black,
         "Transparent" => Colors.Transparent,
