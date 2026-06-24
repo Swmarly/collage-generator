@@ -94,8 +94,8 @@
             </StackPanel>
         </ScrollViewer>
 
-        <Border Grid.Column="1" BorderBrush="Gray" BorderThickness="1" Background="White">
-            <ScrollViewer ZoomMode="Enabled" HorizontalScrollMode="Auto" VerticalScrollMode="Auto">
+        <Border Grid.Column="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" Background="#171717" Padding="16" CornerRadius="8">
+            <ScrollViewer ZoomMode="Enabled" HorizontalScrollMode="Auto" VerticalScrollMode="Auto" Background="#171717">
                 <Canvas x:Name="PreviewCanvas" Width="900" Height="700" SizeChanged="PreviewCanvas_SizeChanged" />
             </ScrollViewer>
         </Border>
