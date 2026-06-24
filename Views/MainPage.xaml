@@ -1,0 +1,103 @@
+<Page
+    x:Class="CollageGenerator.Views.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:models="using:CollageGenerator.Models"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Grid ColumnDefinitions="380,*" Padding="16" ColumnSpacing="16">
+        <ScrollViewer>
+            <StackPanel Spacing="12">
+                <TextBlock Text="Collage Generator" FontSize="28" FontWeight="SemiBold" />
+                <InfoBar x:Name="StatusBar" IsOpen="True" Message="{x:Bind ViewModel.Status, Mode=OneWay}" />
+                <ProgressRing IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}" />
+
+                <Expander Header="Size and layout" IsExpanded="True">
+                    <StackPanel Spacing="8">
+                        <ComboBox Header="Aspect ratio / resolution preset" ItemsSource="{x:Bind ViewModel.Presets}" SelectedItem="{x:Bind ViewModel.SelectedPreset, Mode=TwoWay}" DisplayMemberPath="Name" />
+                        <NumberBox Header="Width" Value="{x:Bind ViewModel.CollageWidth, Mode=TwoWay}" Minimum="1" SpinButtonPlacementMode="Inline" />
+                        <NumberBox Header="Height" Value="{x:Bind ViewModel.CollageHeight, Mode=TwoWay}" Minimum="1" SpinButtonPlacementMode="Inline" />
+                        <Slider Header="Spacing" Minimum="0" Maximum="80" Value="{x:Bind ViewModel.Spacing, Mode=TwoWay}" />
+                        <Slider Header="Outer margin" Minimum="0" Maximum="160" Value="{x:Bind ViewModel.Margin, Mode=TwoWay}" />
+                        <ComboBox x:Name="BackgroundBox" Header="Background color" SelectedIndex="0" SelectionChanged="BackgroundBox_SelectionChanged">
+                            <ComboBoxItem Content="White" />
+                            <ComboBoxItem Content="Black" />
+                            <ComboBoxItem Content="Light gray" />
+                            <ComboBoxItem Content="Dark gray" />
+                            <ComboBoxItem Content="Transparent" />
+                        </ComboBox>
+                        <ComboBox x:Name="OrderModeBox" Header="Image order" SelectedIndex="0" SelectionChanged="OrderModeBox_SelectionChanged">
+                            <ComboBoxItem Content="Manual" Tag="Manual" />
+                            <ComboBoxItem Content="Automatic" Tag="Automatic" />
+                            <ComboBoxItem Content="Random" Tag="Random" />
+                        </ComboBox>
+                        <Button Content="Shuffle order" Click="Shuffle_Click" />
+                        <Button Content="Regenerate layout" Click="Regenerate_Click" />
+                    </StackPanel>
+                </Expander>
+
+                <Expander Header="Images" IsExpanded="True">
+                    <StackPanel Spacing="8">
+                        <Button Content="Select image files" Click="SelectFiles_Click" />
+                        <Button Content="Load folder" Click="LoadFolder_Click" />
+                        <CheckBox Content="Include subfolders" IsChecked="{x:Bind ViewModel.IncludeSubfolders, Mode=TwoWay}" />
+                        <NumberBox Header="Random limit" Value="{x:Bind ViewModel.RandomLimit, Mode=TwoWay}" Minimum="1" SpinButtonPlacementMode="Inline" />
+                        <Button Content="Randomize from folder (up to limit)" Click="RandomFolder_Click" />
+                        <TextBlock Text="Turn off Include subfolders to exclude all subfolders from random selection." TextWrapping="Wrap" FontSize="12" Opacity="0.7" />
+                        <Button Content="Exclude a subfolder from random selection" Click="AddRandomExcludedSubfolder_Click" />
+                        <ListView ItemsSource="{x:Bind ViewModel.RandomExcludedSubfolders}" Height="96">
+                            <ListView.ItemTemplate>
+                                <DataTemplate x:DataType="x:String">
+                                    <Grid ColumnDefinitions="*,Auto" Padding="4">
+                                        <TextBlock Text="{x:Bind}" TextTrimming="CharacterEllipsis" />
+                                        <Button Grid.Column="1" Content="Remove" Click="RemoveRandomExcludedSubfolder_Click" Tag="{x:Bind}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                        <Button Content="Clear subfolder exclusions" Click="ClearRandomExcludedSubfolders_Click" />
+                        <Button Content="Clear random selection" Click="ClearRandom_Click" />
+                        <TextBlock Text="Selected images" FontWeight="SemiBold" />
+                        <ListView x:Name="ImagesList" ItemsSource="{x:Bind ViewModel.SelectedImages}" SelectionMode="Single" Height="220">
+                            <ListView.ItemTemplate>
+                                <DataTemplate x:DataType="models:ImageItem">
+                                    <Grid ColumnDefinitions="*,Auto" Padding="4">
+                                        <StackPanel>
+                                            <TextBlock Text="{x:Bind FileName}" TextTrimming="CharacterEllipsis" />
+                                            <TextBlock Text="{x:Bind SourceKind}" FontSize="12" Opacity="0.7" />
+                                        </StackPanel>
+                                        <Button Grid.Column="1" Content="Remove" Click="RemoveImage_Click" Tag="{x:Bind}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                        <Button Content="Clear all" Click="ClearAll_Click" />
+                    </StackPanel>
+                </Expander>
+
+                <Expander Header="Favorite folders">
+                    <StackPanel Spacing="8">
+                        <Button Content="Add current/random folder to favorites" Click="AddFavorite_Click" />
+                        <ListView ItemsSource="{x:Bind ViewModel.FavoriteFolders}" Height="140">
+                            <ListView.ItemTemplate>
+                                <DataTemplate x:DataType="x:String">
+                                    <Grid ColumnDefinitions="*,Auto,Auto" Padding="4">
+                                        <TextBlock Text="{x:Bind}" TextTrimming="CharacterEllipsis" />
+                                        <Button Grid.Column="1" Content="Use" Click="UseFavorite_Click" Tag="{x:Bind}" />
+                                        <Button Grid.Column="2" Content="Remove" Click="RemoveFavorite_Click" Tag="{x:Bind}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </StackPanel>
+                </Expander>
+                <Button Content="Export collage" Click="Export_Click" />
+            </StackPanel>
+        </ScrollViewer>
+
+        <Border Grid.Column="1" BorderBrush="Gray" BorderThickness="1" Background="White">
+            <ScrollViewer ZoomMode="Enabled" HorizontalScrollMode="Auto" VerticalScrollMode="Auto">
+                <Canvas x:Name="PreviewCanvas" Width="900" Height="700" SizeChanged="PreviewCanvas_SizeChanged" />
+            </ScrollViewer>
+        </Border>
+    </Grid>
+</Page>
